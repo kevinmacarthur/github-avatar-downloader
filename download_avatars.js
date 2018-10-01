@@ -2,14 +2,18 @@ var request = require('request');
 var token = require('./secrets.js')
 var fs = require('fs')
 
+var args = process.argv.slice(2)
+
+
 //Gets all repocontributors from a repo by creating a JSON object that is passed into the
 //downloadImage function which in this case is the callback (cb) function
+
 function getRepoContributors(repoOwner, repoName, cb) {
   var options = {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
     headers: {
       'User-Agent': 'request',
-      'Authorization': token.GITHUB_TOKEN
+      'Authorization': 'token ' + token.GITHUB_TOKEN
     }
   };
   request(options, function(err, res, body) {
@@ -17,17 +21,18 @@ function getRepoContributors(repoOwner, repoName, cb) {
     cb(err, result);
   });
 }
+
 // loops through all the results and calls download image by url function on each one
 function downloadImage(err, result) {
-  console.log("AVATAR URL: ")
   for (i = 0; i < result.length; i++) {
     let avatar_url = result[i].avatar_url
     let name = result[i].login
+
     downloadImageByURL(avatar_url, "avatars/" + name + ".gif")
   }
 }
 
-//downloads images
+//This function actually downloads and streams the image to the avatar directory
 function downloadImageByURL(url, filePath) {
   request(url)
     .on('error', function (err) {
@@ -51,4 +56,4 @@ fs.stat('avatars', function (err, stat) {
 })
 
 
-getRepoContributors('jquery', 'jquery', downloadImage )
+getRepoContributors(args[0], args[1], downloadImage )
