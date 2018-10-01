@@ -5,10 +5,13 @@ var fs = require('fs')
 var args = process.argv.slice(2)
 
 
-//Gets all repocontributors from a repo by creating a JSON object that is passed into the
-//downloadImage function which in this case is the callback (cb) function
+//Gets all repocontributors from a repo by creating a JSON object that is passed into the downloadImage function which in this case is the callback (cb) function
 
 function getRepoContributors(repoOwner, repoName, cb) {
+  if (args.length !== 2) {
+    console.log('Missing either Repo Owner or Repo Name \nPlease ensure both parameters are present')
+    process.exit()
+  }
   var options = {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
     headers: {
@@ -39,10 +42,10 @@ function downloadImageByURL(url, filePath) {
     throw err
     })
     .on('response', function (response) {
-      console.log('Response Status Message: ', response.statusMessage, "\nDownloading images...")
+      console.log('Response Status Message: ', response.statusMessage, "\nDownloading image...")
     })
     .on('end', function (response) {
-      console.log('Images Downloaded')
+      console.log('Image Downloaded')
     })
   .pipe(fs.createWriteStream(filePath))
 }
@@ -50,7 +53,7 @@ function downloadImageByURL(url, filePath) {
 // check to see if directory exists if not Creates new "Avatar" directory
 fs.stat('avatars', function (err, stat) {
   if (err) {
-    console.log("error directory does not exist... \n Creating new avatar directory")
+    console.log("error directory does not exist... \n...Creating new avatar directory")
     fs.mkdir('./avatars')
   }
 })
