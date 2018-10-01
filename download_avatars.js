@@ -2,7 +2,8 @@ var request = require('request');
 var token = require('./secrets.js')
 var fs = require('fs')
 
-
+//Gets all repocontributors from a repo by creating a JSON object that is passed into the
+//downloadImage function which in this case is the callback (cb) function
 function getRepoContributors(repoOwner, repoName, cb) {
   var options = {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
@@ -16,8 +17,8 @@ function getRepoContributors(repoOwner, repoName, cb) {
     cb(err, result);
   });
 }
-
-function loopThrough(err, result) {
+// loops through all the results and calls download image by url function on each one
+function downloadImage(err, result) {
   console.log("AVATAR URL: ")
   for (i = 0; i < result.length; i++) {
     let avatar_url = result[i].avatar_url
@@ -26,7 +27,7 @@ function loopThrough(err, result) {
   }
 }
 
-
+//downloads images
 function downloadImageByURL(url, filePath) {
   request(url)
     .on('error', function (err) {
@@ -40,7 +41,14 @@ function downloadImageByURL(url, filePath) {
     })
   .pipe(fs.createWriteStream(filePath))
 }
-// downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466", "avatars/kvirani.jpg")
+
+// check to see if directory exists if not Creates new "Avatar" directory
+fs.stat('avatars', function (err, stat) {
+  if (err) {
+    console.log("error directory does not exist... \n Creating new avatar directory")
+    fs.mkdir('./avatars')
+  }
+})
 
 
-getRepoContributors('jquery', 'jquery', loopThrough )
+getRepoContributors('jquery', 'jquery', downloadImage )
