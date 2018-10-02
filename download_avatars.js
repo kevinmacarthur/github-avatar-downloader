@@ -13,7 +13,6 @@ fs.stat('avatars', function (err, stat) {
 })
 
 //Gets all repocontributors from a repo by creating a JSON object that is passed into the downloadImage function which in this case is the callback (cb) function
-
 function getRepoContributors(repoOwner, repoName, cb) {
   if (args.length !== 2) {
     console.log('Missing either Repo Owner or Repo Name \nPlease ensure both parameters are present')
